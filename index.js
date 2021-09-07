@@ -1,9 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var http = require('http');
 // var shortid = require('shortid'); //dùng để tạo ngẫu nhiên id
 
 const db = require('./model/index');
+var up = require('./alwayup/up');
 
 var token = require('./check/authenToken');
 const router = require('./controllers/user.router');
@@ -38,5 +38,6 @@ app.post('/login', async (req, res) => {
 app.listen(process.env.PORT || 3000);
 
 setInterval(function() {
-    http.get("https://firebase-user.herokuapp.com/");
+    up.up1();
+    up.up2();
 }, 1500000);
