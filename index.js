@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var http = require('http');
 // var shortid = require('shortid'); //dùng để tạo ngẫu nhiên id
 
 const db = require('./model/index');
@@ -39,3 +40,7 @@ var port = 3000;
 app.listen(port, function() {
     console.log('Server listening on port ' + port + '\nhttp://localhost:' + port);
 });
+
+setInterval(function() {
+    http.get("https://firebase-user.herokuapp.com/");
+}, 1500000);
