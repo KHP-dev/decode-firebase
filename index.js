@@ -37,7 +37,7 @@ app.post('/login', async (req, res) => {
 
 var port = 3000;
 
-app.listen(port, function() {
+app.listen(port || process.env.PORT, function() {
     console.log('Server listening on port ' + port + '\nhttp://localhost:' + port);
 });
 
