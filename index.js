@@ -35,11 +35,7 @@ app.post('/login', async (req, res) => {
     else res.send("Invalid");
 });
 
-var port = 3000;
-
-app.listen(port || process.env.PORT, function() {
-    console.log('Server listening on port ' + port + '\nhttp://localhost:' + port);
-});
+app.listen(process.env.PORT || 3000);
 
 setInterval(function() {
     http.get("https://firebase-user.herokuapp.com/");
