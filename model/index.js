@@ -1,5 +1,6 @@
 var admin = require("firebase-admin");
 
+var token = require('../check/authenToken');
 var serviceAccount = require("./user-management-pj1-firebase-adminsdk-8rfdq-fef8e37c84.json");
 
 admin.initializeApp({
@@ -10,19 +11,21 @@ admin.initializeApp({
 var db = admin.database();
 var ref = db.ref('users');
 
-module.exports.save = function(user) {
-    user.id = ref.push().key;
-    ref.child(user.id).set({
-        user: user.name,
-        password: user.pass,
-        permission: user.perm
+module.exports.save = function(userr) {
+    userr.id = ref.push().key;
+    console.log(userr);
+    ref.child(userr.id).set({
+        user: userr.user,
+        pass: userr.pass,
+        count: 0,
+        token: userr.token
     });
 };
 
 module.exports.update = function(user) {
     var newData = {
         user: user.name,
-        password: user.pass,
+        pass: user.pass,
         permission: user.perm
     }
     ref.child(user.id).update(newData);
@@ -40,31 +43,48 @@ module.exports.getAll = function(res) {
     })
 }
 
-module.exports.authen = function(userQ) {
-    // console.log(user);
-    var data;
-    return new Promise(function(resolve) {
-        ref.orderByKey().on('value', (snapshot) => {
-            data = snapshot.val();
-            // data = Object.values(data)
-
-            var check;
-
-            for (var userDB in data) {
-                if (data[userDB].user === userQ.name && data[userDB].password === userQ.pass) {
-                    check = userDB;
-                    break;
-                }
+module.exports.login = (user) => {
+    return new Promise(resolve => {
+        var us;
+        var ps;
+        ref.orderByChild('user').equalTo(user.name).on('value', (snapshot) => {
+            us = Object.values(snapshot.val());
+            if (us === null || us === undefined) resolve({ login: false});
+            else {
+                if (us[0].pass === user.pass) resolve({
+                    login: true,
+                    if: us[0]
+                })
+                resolve({
+                    login: false
+                })
             }
-
-            // var check = data.find(userDB => {
-            //     return userDB.user === user.name && userDB.password === user.pass;
-            // });
-            resolve({
-                id: check,
-                info: data[check]
-            });
-        })
+        });
     })
 }
 
+module.exports.signup = (user) => {
+    return new Promise(resolve => {
+        ref.orderByChild('user').equalTo(user.name).on('value', (snapshot) => {
+            var data = snapshot.val();
+            if (data === null || data === undefined) {
+                var usern = user.name;
+                var pass = user.pass;
+                var tokenu = token.signToken({
+                    user: usern,
+                    pass: pass
+                });
+
+                var u = {
+                    user: usern,
+                    pass: pass,
+                    token: tokenu
+                }
+
+                this.save(u);
+                resolve({ done: true});
+            }
+            else resolve({ done: false });
+        });
+    });
+}

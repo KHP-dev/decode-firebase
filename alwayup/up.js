@@ -28,5 +28,5 @@ module.exports.up1 = () => {
 } 
 
 module.exports.up2 = () => {
-    https.get("https://firebase-user.herokuapp.com/")
+    https.get("https://decode_add.herokuapp.com/")
 }

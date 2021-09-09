@@ -8,12 +8,11 @@ module.exports.signToken = function(user) {
 }
 
 module.exports.authToken = function(req, res, next) {
-    const token = req.headers['authorization'];
+    // const token = req.headers['authorization'];
+    const token = req.session.token;
     if (!token) res.sendStatus(401);
     else {
         jwt.verify(token, ACCEST_TOKEN_SECRET, (err, data) => {
-            req.permission = data.permission;
-            req.user_id = data.id;
             if (err) res.sendStatus(403);
             else next();
         })
